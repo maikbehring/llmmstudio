@@ -47,6 +47,15 @@ function ChatComponent() {
 			}
 		},
 		onSuccess: (data, userMessage) => {
+			console.log("Mutation success - received data:", data);
+			console.log("User message:", userMessage);
+			console.log("AI response:", data.message);
+			
+			if (!data || !data.message) {
+				console.error("No message in response data:", data);
+				return;
+			}
+			
 			setMessages((prev) => [
 				...prev,
 				{ role: "user", content: userMessage },
@@ -145,7 +154,7 @@ function ChatComponent() {
 					<Content key={index}>
 						<Content>
 							<Text>
-								{msg.role === "user" ? "Du" : "AI"}: {msg.content}
+								{msg.role === "user" ? "Du" : "AI"}: {msg.content || "(leer)"}
 							</Text>
 						</Content>
 					</Content>

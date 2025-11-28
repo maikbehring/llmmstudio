@@ -80,9 +80,14 @@ export const sendChatMessage = createServerFn({ method: "POST" })
 			}
 
 			const responseData = await response.json();
+			
+			console.log("LLM API response:", JSON.stringify(responseData, null, 2));
+			
+			const aiMessage = responseData.choices[0]?.message?.content || "No response from AI";
+			console.log("Extracted AI message:", aiMessage);
 
 			return {
-				message: responseData.choices[0]?.message?.content || "No response from AI",
+				message: aiMessage,
 				usage: responseData.usage,
 			};
 		} catch (error) {
