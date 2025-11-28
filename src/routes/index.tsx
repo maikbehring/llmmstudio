@@ -34,12 +34,17 @@ function ChatComponent() {
 
 		const chatMutation = useMutation({
 		mutationFn: async (userMessage: string) => {
-			const payload = {
-				message: userMessage,
-				model: selectedModel,
-				conversationHistory: messages,
-			};
-			return sendChatMessage.call(payload);
+			try {
+				const payload = {
+					message: userMessage,
+					model: selectedModel,
+					conversationHistory: messages,
+				};
+				return await sendChatMessage.call(payload);
+			} catch (error) {
+				console.error("Error calling sendChatMessage:", error);
+				throw error;
+			}
 		},
 		onSuccess: (data, userMessage) => {
 			setMessages((prev) => [
@@ -49,6 +54,9 @@ function ChatComponent() {
 			]);
 			setInput("");
 			setTextareaValue("");
+		},
+		onError: (error) => {
+			console.error("Chat mutation error:", error);
 		},
 	});
 
@@ -167,12 +175,19 @@ function ChatComponent() {
 				</Button>
 
 				{chatMutation.isError && (
-					<Text>
-						Fehler:{" "}
-						{chatMutation.error instanceof Error
-							? chatMutation.error.message
-							: "Unbekannter Fehler"}
-					</Text>
+					<Content>
+						<Text>
+							Fehler beim Senden der Nachricht:{" "}
+							{chatMutation.error instanceof Error
+								? chatMutation.error.message
+								: String(chatMutation.error)}
+						</Text>
+						{chatMutation.error instanceof Error && chatMutation.error.stack && (
+							<Text>
+								Details: {chatMutation.error.stack.split("\n")[0]}
+							</Text>
+						)}
+					</Content>
 				)}
 
 				{messages.length > 0 && (
