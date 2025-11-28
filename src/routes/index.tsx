@@ -33,14 +33,13 @@ function ChatComponent() {
 	const [selectedModel, setSelectedModel] = useState<string>("gpt-oss-120b");
 	const [showModelDropdown, setShowModelDropdown] = useState(false);
 
-	const chatMutation = useMutation({
+		const chatMutation = useMutation({
 		mutationFn: async (userMessage: string) => {
 			const payload = {
 				message: userMessage,
 				model: selectedModel,
 				conversationHistory: messages,
 			};
-			console.log("Calling sendChatMessage.call with payload:", payload);
 			return sendChatMessage.call(payload);
 		},
 		onSuccess: (data, userMessage) => {
@@ -59,11 +58,9 @@ function ChatComponent() {
 		const trimmedInput = valueToSubmit.trim();
 		
 		if (!trimmedInput || chatMutation.isPending) {
-			console.log("Submit blocked:", { trimmedInput, isPending: chatMutation.isPending });
 			return;
 		}
 
-		console.log("Submitting:", trimmedInput);
 		setInput(trimmedInput);
 		chatMutation.mutate(trimmedInput);
 		setTextareaValue("");
@@ -151,14 +148,12 @@ function ChatComponent() {
 					ref={textAreaRef}
 					defaultValue={textareaValue || input}
 					onKeyDown={(e) => {
-						console.log("Key pressed:", e.key);
 						handleKeyPress(e);
 					}}
 					onInput={(e: any) => {
 						// Try to get value from event
 						const value = e?.target?.value ?? e?.detail?.value ?? e?.value ?? textareaValue;
 						if (value && value !== textareaValue) {
-							console.log("Input event value:", value);
 							setTextareaValue(value);
 						}
 					}}
@@ -172,8 +167,6 @@ function ChatComponent() {
 				>
 					{chatMutation.isPending ? "Wird gesendet..." : "Senden"}
 				</Button>
-
-				<Text>Input State: "{textareaValue || input}" (Length: {(textareaValue || input).length})</Text>
 
 				{chatMutation.isError && (
 					<Text>

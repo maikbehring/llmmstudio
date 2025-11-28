@@ -3,39 +3,33 @@ import { verifyAccessToInstance } from "~/middlewares/verify-access-to-instance"
 import { env } from "~/env";
 import { z } from "zod";
 
+// Whitelist of allowed models to prevent injection attacks
+// Models are validated via z.enum below
 const chatMessageSchema = z.object({
-	message: z.string().min(1),
-	model: z.string().optional(),
+	message: z.string().min(1).max(10000), // Limit message length
+	model: z.enum(["gpt-oss-120b", "Mistral-Small-3.2-24B-Instruct", "Qwen3-Coder-30B-Instruct"]).optional(),
 	conversationHistory: z
 		.array(
 			z.object({
 				role: z.enum(["user", "assistant"]),
-				content: z.string(),
+				content: z.string().max(10000), // Limit history message length
 			}),
 		)
+		.max(50) // Limit conversation history length
 		.optional(),
 });
 
 export const sendChatMessage = createServerFn({ method: "POST" })
-	// Remove middleware completely to test
-	// .middleware([verifyAccessToInstance])
+	.middleware([verifyAccessToInstance])
 	.handler(async (data: unknown) => {
 		try {
-			console.log("=== HANDLER CALLED ===");
-			console.log("Data received:", JSON.stringify(data, null, 2));
-			console.log("Data type:", typeof data);
-			console.log("Data is null:", data === null);
-			console.log("Data is undefined:", data === undefined);
-			
 			// Ignore calls without data (e.g., from Hot Reload or automatic triggers)
 			if (!data || typeof data !== "object" || data === null) {
-				console.log("Ignoring call without data (likely Hot Reload or automatic trigger)");
 				return { message: "", usage: null };
 			}
 
 			const dataWithMessage = data as { message?: unknown; [key: string]: unknown };
 			if (!dataWithMessage.message || typeof dataWithMessage.message !== "string") {
-				console.log("Ignoring call without message field");
 				return { message: "", usage: null };
 			}
 
@@ -92,21 +86,19 @@ export const sendChatMessage = createServerFn({ method: "POST" })
 				usage: responseData.usage,
 			};
 		} catch (error) {
-			console.error("=== ERROR in sendChatMessage ===");
-			console.error("Error type:", error?.constructor?.name);
-			console.error("Error message:", error instanceof Error ? error.message : String(error));
-			console.error("Error stack:", error instanceof Error ? error.stack : "No stack");
-			console.error("Full error:", error);
-			
+			// Log errors securely without exposing sensitive data
 			if (error instanceof z.ZodError) {
 				const errorMsg = `Validation error: ${error.errors.map(e => e.message).join(", ")}`;
-				console.error("ZodError details:", error.errors);
+				console.error("Validation error in sendChatMessage:", errorMsg);
 				throw new Error(errorMsg);
 			}
 			if (error instanceof Error) {
+				// Only log error message, not stack trace in production
+				console.error("Error in sendChatMessage:", error.message);
 				throw error;
 			}
-			throw new Error(`Unknown error: ${String(error)}`);
+			console.error("Unknown error in sendChatMessage");
+			throw new Error("An error occurred while processing your message");
 		}
 	});
 
