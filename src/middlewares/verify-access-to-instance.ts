@@ -14,9 +14,8 @@ export const verifyAccessToInstance = createMiddleware({
 			const sessionToken = await getSessionToken();
 			const config = await getConfig();
 
-			// Daten explizit weitergeben
+			// Daten werden automatisch durchgereicht, nur sendContext hinzufügen
 			return next({
-				data, // Daten explizit weitergeben
 				sendContext: {
 					sessionToken,
 					projectId: config.projectId,
@@ -39,9 +38,8 @@ export const verifyAccessToInstance = createMiddleware({
 
 			const res = await verify(context.sessionToken);
 
-			// Daten explizit weitergeben
+			// Daten werden automatisch durchgereicht - nur context hinzufügen
 			return next({
-				data, // Daten explizit weitergeben
 				context: {
 					extensionInstanceId: res.extensionInstanceId,
 					extensionId: res.extensionId,
