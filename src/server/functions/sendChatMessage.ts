@@ -23,13 +23,27 @@ export const sendChatMessage = createServerFn({ method: "POST" })
 	.middleware([verifyAccessToInstance])
 	.handler(async (data: unknown) => {
 		try {
+			console.log("=== HANDLER CALLED ===");
+			console.log("Data received:", JSON.stringify(data, null, 2));
+			console.log("Data type:", typeof data);
+			console.log("Data is null:", data === null);
+			console.log("Data is undefined:", data === undefined);
+			
 			// Ignore calls without data (e.g., from Hot Reload or automatic triggers)
 			if (!data || typeof data !== "object" || data === null) {
+				console.log("Ignoring call without data (likely Hot Reload or automatic trigger)");
 				return { message: "", usage: null };
 			}
 
 			const dataWithMessage = data as { message?: unknown; [key: string]: unknown };
+			console.log("Data with message check:", {
+				hasMessage: !!dataWithMessage.message,
+				messageType: typeof dataWithMessage.message,
+				messageValue: dataWithMessage.message,
+			});
+			
 			if (!dataWithMessage.message || typeof dataWithMessage.message !== "string") {
+				console.log("Ignoring call without message field or invalid message type");
 				return { message: "", usage: null };
 			}
 
