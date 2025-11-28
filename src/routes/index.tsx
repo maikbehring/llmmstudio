@@ -7,7 +7,7 @@ import {
 } from "@mittwald/flow-remote-react-components";
 import { useMutation } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
-import { useState, useRef } from "react";
+import { useState } from "react";
 import { sendChatMessage } from "~/server/functions/sendChatMessage";
 
 export const Route = createFileRoute("/")({
@@ -28,7 +28,6 @@ const AVAILABLE_MODELS = [
 function ChatComponent() {
 	const [input, setInput] = useState("");
 	const [messages, setMessages] = useState<Message[]>([]);
-	const textAreaRef = useRef<HTMLTextAreaElement>(null);
 	const [textareaValue, setTextareaValue] = useState("");
 	const [selectedModel, setSelectedModel] = useState<string>("gpt-oss-120b");
 	const [showModelDropdown, setShowModelDropdown] = useState(false);
@@ -145,7 +144,6 @@ function ChatComponent() {
 
 			<Content>
 				<TextArea
-					ref={textAreaRef}
 					defaultValue={textareaValue || input}
 					onKeyDown={(e) => {
 						handleKeyPress(e);
