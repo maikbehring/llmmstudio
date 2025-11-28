@@ -96,16 +96,20 @@ function ChatComponent() {
 			<Heading>mittwald GPT</Heading>
 			
 			<Content>
-				<Text>
-					Powered by mittwald - entwickelt und gehostet in Espelkamp, 
-					wo sowohl das mStudio als auch die leistungsstarken LLM-Modelle 
-					betrieben werden. Die malerische Kleinstadt im Herzen Ostwestfalens 
-					ist Heimat unserer innovativen Cloud-Infrastruktur.
-				</Text>
+				<Content>
+					<Text>
+						Powered by mittwald - entwickelt und gehostet in Espelkamp, 
+						wo sowohl das mStudio als auch die leistungsstarken LLM-Modelle 
+						betrieben werden. Die malerische Kleinstadt im Herzen Ostwestfalens 
+						ist Heimat unserer innovativen Cloud-Infrastruktur.
+					</Text>
+				</Content>
 			</Content>
 
 			<Content>
-				<Text>Modell auswählen:</Text>
+				<Content>
+					<Text>Modell auswählen:</Text>
+				</Content>
 				<Content>
 					<Button
 						onPress={() => setShowModelDropdown(!showModelDropdown)}
@@ -131,15 +135,19 @@ function ChatComponent() {
 			</Content>
 
 			<Content>
-				{messages.length === 0 && (
-					<Text>Starte eine Unterhaltung mit dem AI-Assistenten!</Text>
-				)}
+				<Content>
+					{messages.length === 0 && (
+						<Text>Starte eine Unterhaltung mit dem AI-Assistenten!</Text>
+					)}
+				</Content>
 
 				{messages.map((msg, index) => (
 					<Content key={index}>
-						<Text>
-							{msg.role === "user" ? "Du" : "AI"}: {msg.content}
-						</Text>
+						<Content>
+							<Text>
+								{msg.role === "user" ? "Du" : "AI"}: {msg.content}
+							</Text>
+						</Content>
 					</Content>
 				))}
 
@@ -151,52 +159,60 @@ function ChatComponent() {
 			</Content>
 
 			<Content>
-				<TextArea
-					defaultValue={textareaValue || input}
-					onKeyDown={(e) => {
-						handleKeyPress(e);
-					}}
-					onInput={(e: any) => {
-						// Try to get value from event
-						const value = e?.target?.value ?? e?.detail?.value ?? e?.value ?? textareaValue;
-						if (value && value !== textareaValue) {
-							setTextareaValue(value);
-						}
-					}}
-					placeholder="Schreibe eine Nachricht..."
-					rows={3}
-				/>
+				<Content>
+					<TextArea
+						defaultValue={textareaValue || input}
+						onKeyDown={(e) => {
+							handleKeyPress(e);
+						}}
+						onInput={(e: any) => {
+							// Try to get value from event
+							const value = e?.target?.value ?? e?.detail?.value ?? e?.value ?? textareaValue;
+							if (value && value !== textareaValue) {
+								setTextareaValue(value);
+							}
+						}}
+						placeholder="Schreibe eine Nachricht..."
+						rows={3}
+					/>
+				</Content>
 
-				<Button
-					onPress={handleSubmit}
-					isDisabled={chatMutation.isPending || !(textareaValue || input).trim()}
-				>
-					{chatMutation.isPending ? "Wird gesendet..." : "Senden"}
-				</Button>
+				<Content>
+					<Button
+						onPress={handleSubmit}
+						isDisabled={chatMutation.isPending || !(textareaValue || input).trim()}
+					>
+						{chatMutation.isPending ? "Wird gesendet..." : "Senden"}
+					</Button>
+				</Content>
 
 				{chatMutation.isError && (
 					<Content>
-						<Text>
-							Fehler beim Senden der Nachricht:{" "}
-							{chatMutation.error instanceof Error
-								? chatMutation.error.message
-								: String(chatMutation.error)}
-						</Text>
-						{chatMutation.error instanceof Error && chatMutation.error.stack && (
+						<Content>
 							<Text>
-								Details: {chatMutation.error.stack.split("\n")[0]}
+								Fehler beim Senden der Nachricht:{" "}
+								{chatMutation.error instanceof Error
+									? chatMutation.error.message
+									: String(chatMutation.error)}
 							</Text>
-						)}
+							{chatMutation.error instanceof Error && chatMutation.error.stack && (
+								<Text>
+									Details: {chatMutation.error.stack.split("\n")[0]}
+								</Text>
+							)}
+						</Content>
 					</Content>
 				)}
 
 				{messages.length > 0 && (
-					<Button
-						onPress={() => setMessages([])}
-						isDisabled={chatMutation.isPending}
-					>
-						Chat zurücksetzen
-					</Button>
+					<Content>
+						<Button
+							onPress={() => setMessages([])}
+							isDisabled={chatMutation.isPending}
+						>
+							Chat zurücksetzen
+						</Button>
+					</Content>
 				)}
 			</Content>
 		</Content>
