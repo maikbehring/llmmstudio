@@ -49,6 +49,8 @@ function RootComponent() {
 }
 
 function RootDocument({ children }: Readonly<{ children: ReactNode }>) {
+	const isDevelopment = process.env.NODE_ENV === "development";
+	
 	return (
 		<html lang="en">
 			<head>
@@ -57,8 +59,12 @@ function RootDocument({ children }: Readonly<{ children: ReactNode }>) {
 			<body>
 				{children}
 				<Scripts />
-				<TanStackRouterDevtools position="bottom-right" />
-				<ReactQueryDevtools buttonPosition="bottom-left" />
+				{isDevelopment && (
+					<>
+						<TanStackRouterDevtools position="bottom-right" />
+						<ReactQueryDevtools buttonPosition="bottom-left" />
+					</>
+				)}
 			</body>
 		</html>
 	);
