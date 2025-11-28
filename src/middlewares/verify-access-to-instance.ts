@@ -7,32 +7,45 @@ export const verifyAccessToInstance = createMiddleware({
 	validateClient: true,
 })
 	.client(async ({ next }) => {
-		const sessionToken = await getSessionToken();
-		const config = await getConfig();
+		try {
+			const sessionToken = await getSessionToken();
+			const config = await getConfig();
 
-		// Daten werden automatisch durchgereicht, nur sendContext hinzufügen
-		return next({
-			sendContext: {
-				sessionToken,
-				projectId: config.projectId,
-			},
-		});
+			// Daten werden automatisch durchgereicht, nur sendContext hinzufügen
+			return next({
+				sendContext: {
+					sessionToken,
+					projectId: config.projectId,
+				},
+			});
+		} catch (error) {
+			console.error("Error in client middleware:", error);
+			throw new Error("Failed to get session token or config");
+		}
 	})
 	.server(async ({ next, context }) => {
-		if (!context.sessionToken) {
-			throw new Error("Not authorized");
+		try {
+			if (!context.sessionToken) {
+				throw new Error("Not authorized: No session token provided");
+			}
+
+			const res = await verify(context.sessionToken);
+
+			// Daten werden automatisch durchgereicht - nur context hinzufügen
+			return next({
+				context: {
+					extensionInstanceId: res.extensionInstanceId,
+					extensionId: res.extensionId,
+					userId: res.userId,
+					contextId: res.contextId,
+					projectId: context.projectId,
+				},
+			});
+		} catch (error) {
+			console.error("Error in server middleware:", error);
+			if (error instanceof Error) {
+				throw error;
+			}
+			throw new Error("Authentication failed");
 		}
-
-		const res = await verify(context.sessionToken);
-
-		// Daten werden automatisch durchgereicht - nur context hinzufügen
-		return next({
-			context: {
-				extensionInstanceId: res.extensionInstanceId,
-				extensionId: res.extensionId,
-				userId: res.userId,
-				contextId: res.contextId,
-				projectId: context.projectId,
-			},
-		});
 	});
