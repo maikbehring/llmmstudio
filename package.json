@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vite dev",
     "build": "pnpm db:generate && vite build && tsc --noEmit",
-    "start": "vite start",
+    "start": "vite start --host 0.0.0.0 --port ${PORT:-10000}",
     "check": "pnpm biome check .",
     "db:generate": "prisma generate",
     "db:format": "prisma format",
