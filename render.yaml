@@ -1,0 +1,31 @@
+services:
+  - type: web
+    name: mittwald-gpt
+    env: node
+    plan: starter
+    buildCommand: pnpm install && pnpm db:generate && pnpm build
+    startCommand: pnpm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        sync: false
+      - key: PRISMA_FIELD_ENCRYPTION_KEY
+        sync: false
+      - key: EXTENSION_ID
+        sync: false
+      - key: EXTENSION_SECRET
+        sync: false
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: LLM_API_URL
+        value: https://llm.aihosting.mittwald.de/v1
+    healthCheckPath: /
+    autoDeploy: true
+
+databases:
+  - name: mittwald-gpt-db
+    plan: starter
+    databaseName: mittwald_gpt
+    user: mittwald_gpt_user
+
