@@ -21,10 +21,14 @@ const chatMessageSchema = z.object({
 
 export const sendChatMessage = createServerFn({ method: "POST" })
 	.middleware([verifyAccessToInstance])
-	.handler(async ({ data }: { data: unknown }) => {
+	.handler(async (ctx: { data?: unknown; [key: string]: unknown }) => {
 		try {
 			console.log("=== HANDLER CALLED ===");
-			console.log("Data received:", JSON.stringify(data, null, 2));
+			console.log("Full context received:", JSON.stringify(ctx, null, 2));
+			
+			// Extract data from context - TanStack Start passes the entire request object
+			const data = ctx.data;
+			console.log("Extracted data:", JSON.stringify(data, null, 2));
 			console.log("Data type:", typeof data);
 			console.log("Data is null:", data === null);
 			console.log("Data is undefined:", data === undefined);

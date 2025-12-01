@@ -40,7 +40,11 @@ function ChatComponent() {
 					model: selectedModel,
 					conversationHistory: messages,
 				};
-				return await sendChatMessage.call(payload);
+				console.log("Calling sendChatMessage with payload:", payload);
+				// Try direct call instead of .call()
+				const result = await sendChatMessage(payload);
+				console.log("sendChatMessage result:", result);
+				return result;
 			} catch (error) {
 				console.error("Error calling sendChatMessage:", error);
 				throw error;
