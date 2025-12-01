@@ -33,10 +33,18 @@ export const verifyAccessToInstance = createMiddleware({
 			console.log("Server context:", JSON.stringify(context, null, 2));
 			
 			if (!context.sessionToken) {
+				console.error("Missing session token in context");
 				throw new Error("Not authorized: No session token provided");
 			}
 
+			console.log("Verifying session token...");
 			const res = await verify(context.sessionToken);
+			console.log("Verification successful:", {
+				extensionInstanceId: res.extensionInstanceId,
+				extensionId: res.extensionId,
+				userId: res.userId,
+				contextId: res.contextId,
+			});
 
 			// Daten werden automatisch durchgereicht - nur context hinzufügen
 			return next({
@@ -51,6 +59,8 @@ export const verifyAccessToInstance = createMiddleware({
 		} catch (error) {
 			console.error("Error in server middleware:", error);
 			if (error instanceof Error) {
+				console.error("Error message:", error.message);
+				console.error("Error stack:", error.stack);
 				throw error;
 			}
 			throw new Error("Authentication failed");

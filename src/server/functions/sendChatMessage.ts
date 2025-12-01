@@ -31,8 +31,8 @@ export const sendChatMessage = createServerFn({ method: "POST" })
 			
 			// Ignore calls without data (e.g., from Hot Reload or automatic triggers)
 			if (!data || typeof data !== "object" || data === null) {
-				console.log("Ignoring call without data (likely Hot Reload or automatic trigger)");
-				return { message: "", usage: null };
+				console.error("Handler called without data - this should not happen in production");
+				throw new Error("No data provided to sendChatMessage");
 			}
 
 			const dataWithMessage = data as { message?: unknown; [key: string]: unknown };
@@ -43,8 +43,8 @@ export const sendChatMessage = createServerFn({ method: "POST" })
 			});
 			
 			if (!dataWithMessage.message || typeof dataWithMessage.message !== "string") {
-				console.log("Ignoring call without message field or invalid message type");
-				return { message: "", usage: null };
+				console.error("Handler called without valid message field");
+				throw new Error("Missing or invalid message field");
 			}
 
 			// Zod-Validierung für vollständige Validierung
