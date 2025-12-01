@@ -10,12 +10,14 @@ export const verifyAccessToInstance = createMiddleware({
 		try {
 			console.log("=== CLIENT MIDDLEWARE ===");
 			console.log("Client data:", JSON.stringify(data, null, 2));
+			console.log("Client data type:", typeof data);
 			
 			const sessionToken = await getSessionToken();
 			const config = await getConfig();
 
-			// Daten werden automatisch durchgereicht, nur sendContext hinzufügen
+			// Daten explizit weitergeben - TanStack Start scheint sie nicht automatisch durchzureichen
 			return next({
+				data: data, // Explizit Daten weitergeben
 				sendContext: {
 					sessionToken,
 					projectId: config.projectId,
@@ -46,8 +48,9 @@ export const verifyAccessToInstance = createMiddleware({
 				contextId: res.contextId,
 			});
 
-			// Daten werden automatisch durchgereicht - nur context hinzufügen
+			// Daten explizit weitergeben - TanStack Start scheint sie nicht automatisch durchzureichen
 			return next({
+				data: data, // Explizit Daten weitergeben
 				context: {
 					extensionInstanceId: res.extensionInstanceId,
 					extensionId: res.extensionId,

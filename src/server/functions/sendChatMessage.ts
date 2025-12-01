@@ -21,7 +21,7 @@ const chatMessageSchema = z.object({
 
 export const sendChatMessage = createServerFn({ method: "POST" })
 	.middleware([verifyAccessToInstance])
-	.handler(async (data: unknown) => {
+	.handler(async ({ data }: { data: unknown }) => {
 		try {
 			console.log("=== HANDLER CALLED ===");
 			console.log("Data received:", JSON.stringify(data, null, 2));
