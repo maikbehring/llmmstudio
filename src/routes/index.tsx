@@ -11,7 +11,7 @@ import {
 } from "@mittwald/flow-remote-react-components";
 import { useMutation } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { sendChatMessage } from "~/server/functions/sendChatMessage";
 import { MessageContent } from "~/components/MessageContent";
 
@@ -36,7 +36,6 @@ function ChatComponent() {
 	const [textareaValue, setTextareaValue] = useState("");
 	const [selectedModel, setSelectedModel] = useState<"gpt-oss-120b" | "Mistral-Small-3.2-24B-Instruct" | "Qwen3-Coder-30B-Instruct">("gpt-oss-120b");
 	const [showModelDropdown, setShowModelDropdown] = useState(false);
-	const messagesEndRef = useRef<HTMLDivElement>(null);
 
 	const chatMutation = useMutation({
 			mutationFn: async (userMessage: string) => {
@@ -79,7 +78,16 @@ function ChatComponent() {
 	});
 
 	const scrollToBottom = () => {
-		messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+		// Find the chat container element and scroll to bottom
+		if (typeof window !== "undefined") {
+			const container = document.querySelector('[data-chat-container]') as HTMLElement;
+			if (container) {
+				container.scrollTo({
+					top: container.scrollHeight,
+					behavior: "smooth",
+				});
+			}
+		}
 	};
 
 	useEffect(() => {
@@ -186,6 +194,7 @@ function ChatComponent() {
 
 			{/* Scrollable Chat Area */}
 			<Content
+				data-chat-container
 				style={{
 					flex: 1,
 					overflowY: "auto",
@@ -298,7 +307,6 @@ function ChatComponent() {
 						</Content>
 					)}
 				</ColumnLayout>
-				<div ref={messagesEndRef} />
 			</Content>
 
 			{/* Fixed Input Area */}
