@@ -7,13 +7,15 @@ import {
 	ActionGroup,
 	Flex,
 	Section,
-	ColumnLayout,
 	MessageThread,
 	Message,
 	Avatar,
 	Initials,
 	Header,
 	Align,
+	Select,
+	Label,
+	Option,
 } from "@mittwald/flow-remote-react-components";
 import { useMutation } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
@@ -41,7 +43,6 @@ function ChatComponent() {
 	const [messages, setMessages] = useState<Message[]>([]);
 	const [textareaValue, setTextareaValue] = useState("");
 	const [selectedModel, setSelectedModel] = useState<"gpt-oss-120b" | "Mistral-Small-3.2-24B-Instruct" | "Qwen3-Coder-30B-Instruct">("gpt-oss-120b");
-	const [showModelDropdown, setShowModelDropdown] = useState(false);
 
 	const chatMutation = useMutation({
 			mutationFn: async (userMessage: string) => {
@@ -153,48 +154,21 @@ function ChatComponent() {
 					<Heading level={2} style={{ margin: 0 }}>
 						mittwald GPT
 					</Heading>
-					<Flex gap="s" style={{ alignItems: "center" }}>
-						<Text style={{ fontSize: "0.875rem", color: "var(--color-neutral-600)" }}>
-							Modell:
-						</Text>
-						<Button
-							variant="soft"
-							onPress={() => setShowModelDropdown(!showModelDropdown)}
-						>
-							{AVAILABLE_MODELS.find(m => m.id === selectedModel)?.label || selectedModel} ▼
-						</Button>
-						{showModelDropdown && (
-							<Content
-								style={{
-									position: "absolute",
-									top: "100%",
-									right: 0,
-									marginTop: "0.5rem",
-									backgroundColor: "var(--color-neutral-0)",
-									border: "1px solid var(--color-neutral-200)",
-									borderRadius: "0.5rem",
-									padding: "0.5rem",
-									boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
-									zIndex: 1000,
-								}}
-							>
-								<ColumnLayout rowGap="s">
-									{AVAILABLE_MODELS.map((model) => (
-										<Button
-											key={model.id}
-											variant={selectedModel === model.id ? "solid" : "soft"}
-											onPress={() => {
-												setSelectedModel(model.id);
-												setShowModelDropdown(false);
-											}}
-										>
-											{selectedModel === model.id ? "✓ " : ""}{model.label}
-										</Button>
-									))}
-								</ColumnLayout>
-							</Content>
-						)}
-					</Flex>
+					<Select
+						selectedKey={selectedModel}
+						onSelectionChange={(key) => {
+							if (key && typeof key === "string") {
+								setSelectedModel(key as typeof selectedModel);
+							}
+						}}
+					>
+						<Label>Modell</Label>
+						{AVAILABLE_MODELS.map((model) => (
+							<Option key={model.id}>
+								{model.label}
+							</Option>
+						))}
+					</Select>
 				</Flex>
 			</Section>
 
