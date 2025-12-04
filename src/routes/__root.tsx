@@ -14,6 +14,26 @@ import {
 import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
 import type { ReactNode } from "react";
 
+// Highlight.js CSS für Code-Syntax-Highlighting
+const highlightStyles = `
+.hljs {
+  display: block;
+  overflow-x: auto;
+  padding: 0.5em;
+  background: #1e1e1e;
+  color: #d4d4d4;
+}
+.hljs-comment, .hljs-quote { color: #6a9955; }
+.hljs-variable, .hljs-template-variable, .hljs-tag, .hljs-name, .hljs-selector-id, .hljs-selector-class, .hljs-regexp, .hljs-deletion { color: #f48771; }
+.hljs-number, .hljs-built_in, .hljs-builtin-name, .hljs-literal, .hljs-type, .hljs-params, .hljs-meta, .hljs-link { color: #b5cea8; }
+.hljs-attribute { color: #9cdcfe; }
+.hljs-string, .hljs-symbol, .hljs-bullet, .hljs-addition { color: #ce9178; }
+.hljs-title, .hljs-section { color: #dcdcaa; }
+.hljs-keyword, .hljs-selector-tag { color: #569cd6; }
+.hljs-emphasis { font-style: italic; }
+.hljs-strong { font-weight: bold; }
+`;
+
 export const Route = createRootRouteWithContext<{
 	queryClient: QueryClient;
 }>()({
@@ -53,6 +73,7 @@ function RootDocument({ children }: Readonly<{ children: ReactNode }>) {
 		<html lang="en">
 			<head>
 				<HeadContent />
+				<style dangerouslySetInnerHTML={{ __html: highlightStyles }} />
 			</head>
 			<body>
 				{children}

@@ -9,6 +9,7 @@ import { useMutation } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { sendChatMessage } from "~/server/functions/sendChatMessage";
+import { MessageContent } from "~/components/MessageContent";
 
 export const Route = createFileRoute("/")({
 	component: ChatComponent,
@@ -154,18 +155,52 @@ function ChatComponent() {
 				</Content>
 
 				{messages.map((msg, index) => (
-					<Content key={index}>
+					<Content
+						key={index}
+						style={{
+							marginBottom: "1.5rem",
+							padding: "1rem",
+							backgroundColor:
+								msg.role === "user"
+									? "var(--color-neutral-50)"
+									: "var(--color-primary-50)",
+							borderRadius: "0.5rem",
+							border: "1px solid var(--color-neutral-200)",
+						}}
+					>
 						<Content>
-							<Text>
-								{msg.role === "user" ? "Du" : "AI"}: {msg.content || "(leer)"}
+							<Text
+								style={{
+									fontWeight: "bold",
+									marginBottom: "0.5rem",
+									color:
+										msg.role === "user"
+											? "var(--color-neutral-700)"
+											: "var(--color-primary-700)",
+								}}
+							>
+								{msg.role === "user" ? "Du" : "AI"}
 							</Text>
+						</Content>
+						<Content>
+							<MessageContent content={msg.content || "(leer)"} role={msg.role} />
 						</Content>
 					</Content>
 				))}
 
 				{chatMutation.isPending && (
-					<Content>
-						<Text>AI: Denkt nach...</Text>
+					<Content
+						style={{
+							marginBottom: "1.5rem",
+							padding: "1rem",
+							backgroundColor: "var(--color-primary-50)",
+							borderRadius: "0.5rem",
+							border: "1px solid var(--color-neutral-200)",
+						}}
+					>
+						<Text style={{ fontStyle: "italic", color: "var(--color-neutral-600)" }}>
+							AI: Denkt nach...
+						</Text>
 					</Content>
 				)}
 			</Content>
