@@ -4,6 +4,8 @@ import {
 	Text,
 	Content,
 	TextArea,
+	ActionGroup,
+	Flex,
 } from "@mittwald/flow-remote-react-components";
 import { useMutation } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
@@ -123,17 +125,18 @@ function ChatComponent() {
 				<Content>
 					<Text>Modell auswählen:</Text>
 				</Content>
-				<Content>
+				<Flex gap="s">
 					<Button
 						onPress={() => setShowModelDropdown(!showModelDropdown)}
 					>
 						{AVAILABLE_MODELS.find(m => m.id === selectedModel)?.label || selectedModel} ▼
 					</Button>
 					{showModelDropdown && (
-						<Content>
+						<Flex gap="s">
 							{AVAILABLE_MODELS.map((model) => (
 								<Button
 									key={model.id}
+									variant={selectedModel === model.id ? "solid" : "soft"}
 									onPress={() => {
 										setSelectedModel(model.id);
 										setShowModelDropdown(false);
@@ -142,9 +145,9 @@ function ChatComponent() {
 									{selectedModel === model.id ? "✓ " : ""}{model.label}
 								</Button>
 							))}
-						</Content>
+						</Flex>
 					)}
-				</Content>
+				</Flex>
 			</Content>
 
 			<Content>
@@ -224,14 +227,25 @@ function ChatComponent() {
 					/>
 				</Content>
 
-				<Content>
+				<ActionGroup>
 					<Button
+						color="primary"
 						onPress={handleSubmit}
 						isDisabled={chatMutation.isPending || !(textareaValue || input).trim()}
 					>
 						{chatMutation.isPending ? "Wird gesendet..." : "Senden"}
 					</Button>
-				</Content>
+					{messages.length > 0 && (
+						<Button
+							color="secondary"
+							variant="soft"
+							onPress={() => setMessages([])}
+							isDisabled={chatMutation.isPending}
+						>
+							Chat zurücksetzen
+						</Button>
+					)}
+				</ActionGroup>
 
 				{chatMutation.isError && (
 					<Content>
@@ -248,17 +262,6 @@ function ChatComponent() {
 								</Text>
 							)}
 						</Content>
-					</Content>
-				)}
-
-				{messages.length > 0 && (
-					<Content>
-						<Button
-							onPress={() => setMessages([])}
-							isDisabled={chatMutation.isPending}
-						>
-							Chat zurücksetzen
-						</Button>
 					</Content>
 				)}
 			</Content>
