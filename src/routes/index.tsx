@@ -8,6 +8,12 @@ import {
 	Flex,
 	Section,
 	ColumnLayout,
+	MessageThread,
+	Message,
+	Avatar,
+	Initials,
+	Header,
+	Align,
 } from "@mittwald/flow-remote-react-components";
 import { useMutation } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
@@ -224,89 +230,52 @@ function ChatComponent() {
 					</Content>
 				)}
 
-				<ColumnLayout rowGap="l">
-					{messages.map((msg, index) => (
-						<Content
-							key={index}
-							style={{
-								display: "flex",
-								gap: "1rem",
-								padding: "1.5rem",
-								backgroundColor: msg.role === "user" ? "transparent" : "var(--color-neutral-50)",
-								borderRadius: "0.5rem",
-							}}
-						>
-							<Content
-								style={{
-									flexShrink: 0,
-									width: "32px",
-									height: "32px",
-									borderRadius: "50%",
-									backgroundColor:
-										msg.role === "user"
-											? "var(--color-primary-600)"
-											: "var(--color-neutral-400)",
-									display: "flex",
-									alignItems: "center",
-									justifyContent: "center",
-									color: "var(--color-neutral-0)",
-									fontWeight: "bold",
-									fontSize: "0.875rem",
-								}}
+				{messages.length > 0 && (
+					<MessageThread>
+						{messages.map((msg, index) => (
+							<Message
+								key={index}
+								type={msg.role === "user" ? "sender" : "responder"}
 							>
-								{msg.role === "user" ? "U" : "AI"}
-							</Content>
-							<Content style={{ flex: 1, minWidth: 0 }}>
-								<Text
-									style={{
-										fontWeight: "600",
-										marginBottom: "0.5rem",
-										color: "var(--color-neutral-700)",
-										fontSize: "0.875rem",
-									}}
-								>
-									{msg.role === "user" ? "Du" : "mittwald GPT"}
-								</Text>
-								<MessageContent content={msg.content || "(leer)"} role={msg.role} />
-							</Content>
-						</Content>
-					))}
+								<Header>
+									<Align>
+										<Avatar>
+											<Initials>
+												{msg.role === "user" ? "Du" : "AI"}
+											</Initials>
+										</Avatar>
+										<Text>
+											<b>{msg.role === "user" ? "Du" : "mittwald GPT"}</b>
+										</Text>
+									</Align>
+								</Header>
+								<Content>
+									<MessageContent content={msg.content || "(leer)"} role={msg.role} />
+								</Content>
+							</Message>
+						))}
 
-					{chatMutation.isPending && (
-						<Content
-							style={{
-								display: "flex",
-								gap: "1rem",
-								padding: "1.5rem",
-								backgroundColor: "var(--color-neutral-50)",
-								borderRadius: "0.5rem",
-							}}
-						>
-							<Content
-								style={{
-									flexShrink: 0,
-									width: "32px",
-									height: "32px",
-									borderRadius: "50%",
-									backgroundColor: "var(--color-neutral-400)",
-									display: "flex",
-									alignItems: "center",
-									justifyContent: "center",
-									color: "var(--color-neutral-0)",
-									fontWeight: "bold",
-									fontSize: "0.875rem",
-								}}
-							>
-								AI
-							</Content>
-							<Content style={{ flex: 1 }}>
-								<Text style={{ fontStyle: "italic", color: "var(--color-neutral-600)" }}>
-									Denkt nach...
-								</Text>
-							</Content>
-						</Content>
-					)}
-				</ColumnLayout>
+						{chatMutation.isPending && (
+							<Message type="responder">
+								<Header>
+									<Align>
+										<Avatar>
+											<Initials>AI</Initials>
+										</Avatar>
+										<Text>
+											<b>mittwald GPT</b>
+										</Text>
+									</Align>
+								</Header>
+								<Content>
+									<Text style={{ fontStyle: "italic", color: "var(--color-neutral-600)" }}>
+										Denkt nach...
+									</Text>
+								</Content>
+							</Message>
+						)}
+					</MessageThread>
+				)}
 			</Content>
 
 			{/* Fixed Input Area */}
