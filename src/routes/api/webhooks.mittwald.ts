@@ -1,4 +1,5 @@
-import { createServerFileRoute } from "@tanstack/react-start/server";
+import { createServerFileRoute } from "@tanstack/react-start/server"
+import { createServerFileRoute } from "@tanstack/start-server-core";
 import { CombinedWebhookHandlerFactory } from "@weissaufschwarz/mitthooks/index";
 import type {
 	ExtensionStorage,
@@ -24,12 +25,12 @@ class PrismaExtensionStorage implements ExtensionStorage {
 					active: true,
 					secret: extension.secret,
 				},
-			});
+			})
 		} catch (error) {
 			console.error(
 				"Error while upserting extension in extension storage",
 				error,
-			);
+			)
 			throw new Error("Failed to create or update extension instance");
 		}
 	}
@@ -45,12 +46,12 @@ class PrismaExtensionStorage implements ExtensionStorage {
 					contextId: extension.contextId,
 					active: extension.enabled,
 				},
-			});
+			})
 		} catch (error) {
 			console.error(
 				"Error while updating extension in extension storage",
 				error,
-			);
+			)
 			throw new Error("Failed to update extension instance");
 		}
 	}
@@ -68,7 +69,7 @@ class PrismaExtensionStorage implements ExtensionStorage {
 					id: extensionInstanceId,
 					secret: secret,
 				},
-			});
+			})
 		} catch (error) {
 			console.error("Error while rotating secret in extension storage", error);
 			throw new Error("Failed to rotate extension secret");
@@ -80,7 +81,7 @@ class PrismaExtensionStorage implements ExtensionStorage {
 				where: {
 					id: extensionInstanceId,
 				},
-			});
+			})
 		} catch (error) {
 			if (
 				error &&
@@ -91,13 +92,13 @@ class PrismaExtensionStorage implements ExtensionStorage {
 				// P2025 = Record to delete does not exist - don't throw error here for idempotency
 				console.warn(
 					"Extension instance to remove does not exist, skipping deletion",
-				);
-				return;
+				)
+				return
 			}
 			console.error(
 				"Error while removing extension instance in extension storage",
 				error,
-			);
+			)
 			throw new Error("Failed to remove extension instance");
 		}
 	}
@@ -125,7 +126,7 @@ export const ServerRoute = createServerFileRoute(
 				signatureSerial,
 				signatureAlgorithm,
 				signature,
-			};
+			}
 
 			await combinedHandler(webhookContent);
 		} catch (e) {
@@ -134,11 +135,11 @@ export const ServerRoute = createServerFileRoute(
 			return new Response("Error handling webhook", {
 				status: 400,
 				statusText: "Internal Server Error",
-			});
+			})
 		}
 
 		return new Response("Webhook handled successfully", {
 			status: 200,
-		});
+		})
 	},
 });
