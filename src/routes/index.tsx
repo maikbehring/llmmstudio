@@ -218,8 +218,8 @@ function ChatComponent() {
 												{msg.role === "user" ? "Du" : "AI"}
 											</Initials>
 										</Avatar>
-										<Text>
-											<b>{msg.role === "user" ? "Du" : "mittwald GPT"}</b>
+										<Text style={{ fontWeight: "bold" }}>
+											{msg.role === "user" ? "Du" : "mittwald GPT"}
 										</Text>
 									</Align>
 								</Header>
@@ -236,8 +236,8 @@ function ChatComponent() {
 										<Avatar>
 											<Initials>AI</Initials>
 										</Avatar>
-										<Text>
-											<b>mittwald GPT</b>
+										<Text style={{ fontWeight: "bold" }}>
+											mittwald GPT
 										</Text>
 									</Align>
 								</Header>
