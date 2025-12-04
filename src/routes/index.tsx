@@ -44,12 +44,19 @@ function ChatComponent() {
 	const [textareaValue, setTextareaValue] = useState("");
 	const [selectedModel, setSelectedModel] = useState<"gpt-oss-120b" | "Mistral-Small-3.2-24B-Instruct" | "Qwen3-Coder-30B-Instruct">("gpt-oss-120b");
 
-	const chatMutation = useMutation({
+		const chatMutation = useMutation({
 			mutationFn: async (userMessage: string) => {
 				try {
+					// Ensure we always use the model ID
+					// selectedModel should be the ID, but we verify it exists
+					const modelId = AVAILABLE_MODELS.find(m => m.id === selectedModel)?.id;
+					if (!modelId) {
+						throw new Error(`Invalid model selected: ${selectedModel}`);
+					}
+					
 					const payload = {
 						message: userMessage,
-						model: selectedModel,
+						model: modelId,
 						conversationHistory: messages,
 					};
 					console.log("Calling sendChatMessage with payload:", payload);
@@ -158,7 +165,11 @@ function ChatComponent() {
 						selectedKey={selectedModel}
 						onSelectionChange={(key) => {
 							if (key && typeof key === "string") {
-								setSelectedModel(key as typeof selectedModel);
+								// Handle both ID and label (Select might return label)
+								const modelId = AVAILABLE_MODELS.find(m => m.id === key || m.label === key)?.id;
+								if (modelId) {
+									setSelectedModel(modelId as typeof selectedModel);
+								}
 							}
 						}}
 					>
@@ -184,26 +195,6 @@ function ChatComponent() {
 					flexDirection: "column",
 				}}
 			>
-				{messages.length === 0 && (
-					<Content
-						style={{
-							flex: 1,
-							display: "flex",
-							alignItems: "center",
-							justifyContent: "center",
-							flexDirection: "column",
-							gap: "1rem",
-						}}
-					>
-						<Heading level={1}>Willkommen bei mittwald GPT</Heading>
-						<Text style={{ textAlign: "center", maxWidth: "600px", color: "var(--color-neutral-600)" }}>
-							Powered by mittwald - entwickelt und gehostet in Espelkamp, 
-							wo sowohl das mStudio als auch die leistungsstarken LLM-Modelle 
-							betrieben werden.
-						</Text>
-					</Content>
-				)}
-
 				{messages.length > 0 && (
 					<MessageThread>
 						{messages.map((msg, index) => (
