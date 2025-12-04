@@ -137,47 +137,30 @@ export function MessageContent({ content, role }: MessageContentProps) {
 				{children}
 			</a>
 		),
-		table: ({ children }) => (
-			<Content
-				style={{
-					overflowX: "auto",
-					margin: "0.5rem 0",
-				}}
-			>
-				<table
+		table: () => {
+			// Flow Remote Components don't support table elements
+			// Render as a simple text block instead
+			return (
+				<Content
 					style={{
-						borderCollapse: "collapse",
-						width: "100%",
+						margin: "0.5rem 0",
+						padding: "0.5rem",
+						backgroundColor: "var(--color-neutral-50)",
+						borderRadius: "0.25rem",
 						border: "1px solid var(--color-neutral-200)",
 					}}
 				>
-					{children}
-				</table>
-			</Content>
-		),
-		th: ({ children }) => (
-			<th
-				style={{
-					border: "1px solid var(--color-neutral-200)",
-					padding: "0.5rem",
-					backgroundColor: "var(--color-neutral-100)",
-					textAlign: "left",
-					fontWeight: "bold",
-				}}
-			>
-				{children}
-			</th>
-		),
-		td: ({ children }) => (
-			<td
-				style={{
-					border: "1px solid var(--color-neutral-200)",
-					padding: "0.5rem",
-				}}
-			>
-				{children}
-			</td>
-		),
+					<Text style={{ fontFamily: "monospace", fontSize: "0.875em" }}>
+						[Table content - please format as text]
+					</Text>
+				</Content>
+			);
+		},
+		thead: () => null,
+		tbody: () => null,
+		tr: () => null,
+		th: () => null,
+		td: () => null,
 		hr: () => (
 			<Content
 				style={{
