@@ -29,27 +29,26 @@ function ChatComponent() {
 	const [input, setInput] = useState("");
 	const [messages, setMessages] = useState<Message[]>([]);
 	const [textareaValue, setTextareaValue] = useState("");
-	const [selectedModel, setSelectedModel] = useState<string>("gpt-oss-120b");
+	const [selectedModel, setSelectedModel] = useState<"gpt-oss-120b" | "Mistral-Small-3.2-24B-Instruct" | "Qwen3-Coder-30B-Instruct">("gpt-oss-120b");
 	const [showModelDropdown, setShowModelDropdown] = useState(false);
 
 		const chatMutation = useMutation({
-		mutationFn: async (userMessage: string) => {
-			try {
-				const payload = {
-					message: userMessage,
-					model: selectedModel,
-					conversationHistory: messages,
-				};
-				console.log("Calling sendChatMessage with payload:", payload);
-				// Try direct call instead of .call()
-				const result = await sendChatMessage(payload);
-				console.log("sendChatMessage result:", result);
-				return result;
-			} catch (error) {
-				console.error("Error calling sendChatMessage:", error);
-				throw error;
-			}
-		},
+			mutationFn: async (userMessage: string) => {
+				try {
+					const payload = {
+						message: userMessage,
+						model: selectedModel,
+						conversationHistory: messages,
+					};
+					console.log("Calling sendChatMessage with payload:", payload);
+					const result = await sendChatMessage({ data: payload });
+					console.log("sendChatMessage result:", result);
+					return result;
+				} catch (error) {
+					console.error("Error calling sendChatMessage:", error);
+					throw error;
+				}
+			},
 		onSuccess: (data, userMessage) => {
 			console.log("Mutation success - received data:", data);
 			console.log("User message:", userMessage);

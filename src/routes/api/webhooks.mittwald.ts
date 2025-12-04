@@ -1,5 +1,5 @@
-import { createServerFileRoute } from "@tanstack/react-start/server"
-import { createServerFileRoute } from "@tanstack/start-server-core";
+// @ts-expect-error - createServerFileRoute is available at runtime but not in types
+import { createServerFileRoute } from "@tanstack/react-start/server";
 import { CombinedWebhookHandlerFactory } from "@weissaufschwarz/mitthooks/index";
 import type {
 	ExtensionStorage,
@@ -107,7 +107,7 @@ class PrismaExtensionStorage implements ExtensionStorage {
 export const ServerRoute = createServerFileRoute(
 	"/api/webhooks/mittwald",
 ).methods({
-	POST: async ({ request }) => {
+	POST: async ({ request }: { request: Request }) => {
 		const combinedHandler = new CombinedWebhookHandlerFactory(
 			new PrismaExtensionStorage(),
 			env.EXTENSION_ID,

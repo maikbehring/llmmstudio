@@ -57,7 +57,7 @@ function RootDocument({ children }: Readonly<{ children: ReactNode }>) {
 			<body>
 				{children}
 				<Scripts />
-				{typeof window !== "undefined" && import.meta.env.DEV && (
+				{typeof window !== "undefined" && process.env.NODE_ENV === "development" && (
 					<>
 						<TanStackRouterDevtools position="bottom-right" />
 						<ReactQueryDevtools buttonPosition="bottom-left" />

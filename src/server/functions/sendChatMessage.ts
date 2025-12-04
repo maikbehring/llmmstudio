@@ -90,7 +90,7 @@ export const sendChatMessage = createServerFn({ method: "POST" })
 		} catch (error) {
 			// Log errors securely without exposing sensitive data
 			if (error instanceof z.ZodError) {
-				const errorMsg = `Validation error: ${error.errors.map(e => e.message).join(", ")}`;
+				const errorMsg = `Validation error: ${error.issues.map((e) => e.message).join(", ")}`;
 				console.error("Validation error in sendChatMessage:", errorMsg);
 				throw new Error(errorMsg);
 			}

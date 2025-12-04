@@ -4,20 +4,15 @@ import { createMiddleware } from "@tanstack/react-start";
 
 export const verifyAccessToInstance = createMiddleware({
 	type: "function",
-	validateClient: true,
 })
-	.client(async ({ next, data }) => {
+	.client(async ({ next }) => {
 		try {
 			console.log("=== CLIENT MIDDLEWARE ===");
-			console.log("Client data:", JSON.stringify(data, null, 2));
-			console.log("Client data type:", typeof data);
 			
 			const sessionToken = await getSessionToken();
 			const config = await getConfig();
 
-			// Daten explizit weitergeben - TanStack Start scheint sie nicht automatisch durchzureichen
 			return next({
-				data: data, // Explizit Daten weitergeben
 				sendContext: {
 					sessionToken,
 					projectId: config.projectId,
@@ -28,10 +23,9 @@ export const verifyAccessToInstance = createMiddleware({
 			throw new Error("Failed to get session token or config");
 		}
 	})
-	.server(async ({ next, context, data }) => {
+	.server(async ({ next, context }) => {
 		try {
 			console.log("=== SERVER MIDDLEWARE ===");
-			console.log("Server data:", JSON.stringify(data, null, 2));
 			console.log("Server context:", JSON.stringify(context, null, 2));
 			
 			if (!context.sessionToken) {
@@ -48,9 +42,7 @@ export const verifyAccessToInstance = createMiddleware({
 				contextId: res.contextId,
 			});
 
-			// Daten explizit weitergeben - TanStack Start scheint sie nicht automatisch durchzureichen
 			return next({
-				data: data, // Explizit Daten weitergeben
 				context: {
 					extensionInstanceId: res.extensionInstanceId,
 					extensionId: res.extensionId,
