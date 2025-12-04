@@ -1,4 +1,5 @@
 import { createServerFn } from "@tanstack/react-start";
+import { zodValidator } from "@tanstack/zod-adapter";
 import { verifyAccessToInstance } from "~/middlewares/verify-access-to-instance";
 import { env } from "~/env";
 import { z } from "zod";
@@ -20,39 +21,17 @@ const chatMessageSchema = z.object({
 });
 
 export const sendChatMessage = createServerFn({ method: "POST" })
+	.inputValidator(zodValidator(chatMessageSchema))
 	.middleware([verifyAccessToInstance])
-	.handler(async (ctx: { data?: unknown; [key: string]: unknown }) => {
+	.handler(async ({ data, context }) => {
 		try {
 			console.log("=== HANDLER CALLED ===");
-			console.log("Full context received:", JSON.stringify(ctx, null, 2));
+			console.log("Data received:", JSON.stringify(data, null, 2));
+			console.log("Context received:", JSON.stringify(context, null, 2));
 			
-			// Extract data from context - TanStack Start passes the entire request object
-			const data = ctx.data;
-			console.log("Extracted data:", JSON.stringify(data, null, 2));
-			console.log("Data type:", typeof data);
-			console.log("Data is null:", data === null);
-			console.log("Data is undefined:", data === undefined);
-			
-			// Ignore calls without data (e.g., from Hot Reload or automatic triggers)
-			if (!data || typeof data !== "object" || data === null) {
-				console.error("Handler called without data - this should not happen in production");
-				throw new Error("No data provided to sendChatMessage");
-			}
-
-			const dataWithMessage = data as { message?: unknown; [key: string]: unknown };
-			console.log("Data with message check:", {
-				hasMessage: !!dataWithMessage.message,
-				messageType: typeof dataWithMessage.message,
-				messageValue: dataWithMessage.message,
-			});
-			
-			if (!dataWithMessage.message || typeof dataWithMessage.message !== "string") {
-				console.error("Handler called without valid message field");
-				throw new Error("Missing or invalid message field");
-			}
-
-			// Zod-Validierung für vollständige Validierung
-			const validatedData = chatMessageSchema.parse(data);
+			// Data is already validated and typed by inputValidator
+			// No need to parse or validate again - it's already done!
+			const validatedData = data as z.infer<typeof chatMessageSchema>;
 
 			// Build messages array for OpenAI
 			const messages: Array<{ role: "user" | "assistant" | "system"; content: string }> = [
