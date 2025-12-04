@@ -7,10 +7,21 @@ const host = process.env.HOST || "0.0.0.0";
 const httpServer = createServer(async (req, res) => {
 	try {
 		const url = `http://${req.headers.host || `${host}:${port}`}${req.url}`;
+		
+		// Read request body if present
+		let body = null;
+		if (req.method !== "GET" && req.method !== "HEAD") {
+			const chunks = [];
+			for await (const chunk of req) {
+				chunks.push(chunk);
+			}
+			body = chunks.length > 0 ? Buffer.concat(chunks) : null;
+		}
+		
 		const request = new Request(url, {
 			method: req.method,
 			headers: req.headers,
-			body: req.method !== "GET" && req.method !== "HEAD" ? req : undefined,
+			body: body,
 		});
 
 		const response = await server.fetch(request);
